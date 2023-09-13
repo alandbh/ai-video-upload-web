@@ -17,7 +17,7 @@ export async function uploadVideosRoute(app:FastifyInstance) {
     // Tem que registrar o fastifyMultipart no app, pois o ele é um plugin do fastify
     app.register(fastifyMultipart, {
         limits: {
-            fieldSize: 1_048_576 * 100 // default field size (1MB or 1048576 bites)
+            fileSize: 1_048_576 * 100 // default field size (1MB or 1048576 bites)
         }
     })
     app.post('/videos', async (req, res) => {

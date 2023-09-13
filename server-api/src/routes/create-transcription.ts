@@ -1,9 +1,14 @@
+import "dotenv/config"
 import { FastifyInstance } from "fastify";
 import { createReadStream } from "node:fs";
 import {z} from 'zod' // Validação
 import { prisma } from "../lib/prisma";
+import { openai } from "../lib/openai";
+import { log } from "node:console";
 
 export async function createTranscriptionRoute(app:FastifyInstance) {
+
+   
     app.post('/videos/:videoId/transcription', async (req, res) => {
 
         // aqui estou estabelecendo o formato dos parametros obrigatorios na URL.
@@ -32,9 +37,27 @@ export async function createTranscriptionRoute(app:FastifyInstance) {
         const videoPath = video.path
         const audioReadStream = createReadStream(videoPath)
 
-        return {
-            videoId, prompt, videoPath
-        }
+        const response = await openai.audio.transcriptions.create({
+            file: audioReadStream,
+            model: 'whisper-1',
+            language: 'pt',
+            response_format: 'json',
+            temperature: 0,
+            prompt
+        })
+
+        const transcription = response.text
+
+        await prisma.video.update({
+            where: {
+                id: videoId,
+            }, 
+            data: {
+                transcription
+            }
+        })
+
+        return {transcription}
 
     })
 }
