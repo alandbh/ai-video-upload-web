@@ -1,0 +1,25 @@
+# @name get-prompts
+GET http://localhost:3333/prompts
+
+###
+
+# @name Upload
+POST http://localhost:3333/videos
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="example.mp3"
+Content-Type: audio/mpeg
+
+< ./example.mp3
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# @name create-transition
+POST http://localhost:3333/videos/99fc6e01-940f-4595-be08-182ab79ed1c7/transcription
+Content-Type: application/json
+
+{
+    "prompt": "telescópio, saturno, planeta, estrela, galáxia"
+}
