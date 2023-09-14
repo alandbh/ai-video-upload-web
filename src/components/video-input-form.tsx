@@ -7,13 +7,32 @@ import { Button } from "./ui/button";
 import { getFFmpeg } from "@/lib/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
 import { log } from "console";
+import { api } from "@/lib/axios";
 
 // import { Container } from './styles';
 
+type Status = "waiting" | "converting" | "uploading" | "generating" | "success";
+
+type ButtonTextProps = {
+    converting: string;
+    uploading: string;
+    generating: string;
+    waiting: string;
+    success: string;
+};
+
 export const VideoInputForm: React.FC = () => {
     const [videoFile, setVideoFile] = useState<File | null>(null);
-
+    const [status, setStatus] = useState<Status | null>(null);
     const promptInputRef = useRef<HTMLTextAreaElement>(null);
+
+    const buttonText: ButtonTextProps = {
+        converting: "Converting video...",
+        uploading: "Uploading video...",
+        generating: "Generating transcription...",
+        waiting: "Upload video...",
+        success: "Trancription done!",
+    };
 
     function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
         const { files } = event.currentTarget;
@@ -25,10 +44,13 @@ export const VideoInputForm: React.FC = () => {
         const selectedFile = files[0];
 
         setVideoFile(selectedFile);
+        setStatus("waiting");
     }
 
     async function convertVideoToAudio(video: File) {
         console.log("começou a converter...");
+
+        setStatus("converting");
 
         const ffmpeg = await getFFmpeg();
 
@@ -84,7 +106,27 @@ export const VideoInputForm: React.FC = () => {
 
         const audioFile = await convertVideoToAudio(videoFile);
 
-        console.log(audioFile, prompt);
+        // Isso aqui é para ajustar o content type da requisição
+        const data = new FormData();
+
+        data.append("file", audioFile);
+
+        // retornando o objeto com o ID do video e o caminho do mp3 salvo
+        setStatus("uploading");
+        const response = await api.post("/videos", data);
+
+        const videoId = response.data.video.id;
+
+        // Gerando a transcrição
+
+        setStatus("generating");
+
+        await api.post(`/videos/${videoId}/transcription`, {
+            prompt,
+        });
+
+        console.log("Finalizou a transcrição");
+        setStatus("success");
     }
 
     const previewURL = useMemo(() => {
@@ -135,9 +177,16 @@ export const VideoInputForm: React.FC = () => {
                     id="transcription_prompt"
                     className="min-h-[80px] leading-relaxed"
                     placeholder="Include comma separated keywords that are present in the video."
+                    disabled={status !== "waiting"}
                 />
-                <Button className="w-full">
-                    <Upload className="mr-2" /> Upload Video
+                <Button
+                    disabled={status !== "waiting"}
+                    data-success={status === "success"}
+                    type="submit"
+                    className="w-full data-[success=true]:bg-green-500:"
+                >
+                    <Upload className="mr-2" />{" "}
+                    {status !== null ? buttonText[status] : "Upload Video"}
                 </Button>
             </div>
         </form>
