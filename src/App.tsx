@@ -1,4 +1,4 @@
-import { Github, FileVideo, Upload, Wand2 } from "lucide-react";
+import { Github, Wand2 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { Separator } from "./components/ui/separator";
 import { Textarea } from "./components/ui/textarea";
@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from "./components/ui/select";
 import { Slider } from "./components/ui/slider";
+import { VideoInputForm } from "./components/video-input-form";
 
 function App() {
     return (
@@ -56,38 +57,7 @@ function App() {
                     </div>
 
                     <aside className="w-80 space-y-6">
-                        <form action="" className="space-y-6">
-                            <label
-                                htmlFor="video"
-                                className="border w-full flex rounded-md aspect-video cursor-pointer flex-col gap-6 text-sm border-dashed items-center justify-center text-muted-foreground hover:bg-primary/10"
-                            >
-                                <FileVideo />
-                                Select a mp4 file
-                            </label>
-
-                            <input
-                                type="file"
-                                accept="video/mp4"
-                                name="video"
-                                id="video"
-                                className="sr-only"
-                            />
-
-                            <Separator />
-                            <div className="space-y-4">
-                                <Label htmlFor="transcription_prompt">
-                                    Transcription prompt
-                                </Label>
-                                <Textarea
-                                    id="transcription_prompt"
-                                    className="min-h-[80px] leading-relaxed"
-                                    placeholder="Include comma separated keywords that are present in the video."
-                                />
-                                <Button className="w-full">
-                                    <Upload className="mr-2" /> Upload Video
-                                </Button>
-                            </div>
-                        </form>
+                        <VideoInputForm />
 
                         <Separator />
 
