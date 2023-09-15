@@ -14,8 +14,12 @@ import { Slider } from "./components/ui/slider";
 import { VideoInputForm } from "./components/video-input-form";
 import { PromptSelect } from "./components/prompt-select";
 import { log } from "./lib/utils";
+import { useState } from "react";
 
 function App() {
+    const [temperature, setTemperature] = useState(0.5);
+    const [videoId, setVideoId] = useState<string | null>(null);
+
     function handlePromptSelect(template: string) {
         log({ template });
     }
@@ -62,7 +66,7 @@ function App() {
                     </div>
 
                     <aside className="w-80 space-y-6">
-                        <VideoInputForm />
+                        <VideoInputForm onUploaded={setVideoId} />
 
                         <Separator />
 
@@ -95,7 +99,19 @@ function App() {
                             <Separator />
                             <div className="space-y-6">
                                 <Label htmlFor="temperature">Temperature</Label>
-                                <Slider min={0} max={1} step={0.1} />
+
+                                {/* Esse componente Slider sempre tem os values como array, mesmo ele sendo simples como o abaixo
+                                é que por padrão o slider pode receber dois valores (minimo e maximo - com duas bolinhas)
+                                Então, neste caso, o value, tem que ser em formato de array */}
+                                <Slider
+                                    value={[temperature]}
+                                    onValueChange={(value) =>
+                                        setTemperature(value[0])
+                                    }
+                                    min={0}
+                                    max={1}
+                                    step={0.1}
+                                />
                                 <p className="text-xs text-muted-foreground italic">
                                     The higher the temperature, the more
                                     creative (and prone to make mistakes) the

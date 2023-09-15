@@ -6,7 +6,6 @@ import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { getFFmpeg } from "@/lib/ffmpeg";
 import { fetchFile } from "@ffmpeg/util";
-import { log } from "console";
 import { api } from "@/lib/axios";
 
 // import { Container } from './styles';
@@ -21,7 +20,11 @@ type ButtonTextProps = {
     success: string;
 };
 
-export const VideoInputForm: React.FC = () => {
+type VideoInputFormPropTypes = {
+    onUploaded: (id: string) => void;
+};
+
+export const VideoInputForm = (props: VideoInputFormPropTypes) => {
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [status, setStatus] = useState<Status | null>(null);
     const promptInputRef = useRef<HTMLTextAreaElement>(null);
@@ -127,6 +130,8 @@ export const VideoInputForm: React.FC = () => {
 
         console.log("Finalizou a transcrição");
         setStatus("success");
+
+        props.onUploaded(videoId);
     }
 
     const previewURL = useMemo(() => {
