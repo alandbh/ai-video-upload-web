@@ -15,6 +15,7 @@ import { VideoInputForm } from "./components/video-input-form";
 import { PromptSelect } from "./components/prompt-select";
 import { log } from "./lib/utils";
 import { useState } from "react";
+import { useCompletion } from "ai/react";
 
 function App() {
     const [temperature, setTemperature] = useState(0.5);
@@ -22,7 +23,26 @@ function App() {
 
     function handlePromptSelect(template: string) {
         log({ template });
+        // setInput()
     }
+
+    const {
+        input,
+        setInput,
+        handleInputChange,
+        handleSubmit,
+        completion,
+        isLoading,
+    } = useCompletion({
+        api: "http://localhost:3333/ai/complete",
+        body: {
+            videoId,
+            temperature,
+        },
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
     return (
         <>
             <div className="min-h-screen flex flex-col">
@@ -48,10 +68,14 @@ function App() {
                             <Textarea
                                 className="resize-none p-4 leading-relaxed"
                                 placeholder="Type your AI prompt here..."
+                                value={input}
+                                onChange={handleInputChange}
                             />
                             <Textarea
+                                readOnly
                                 className="resize-none p-4 leading-relaxed"
                                 placeholder="AI result"
+                                value={completion}
                             />
                         </div>
 
@@ -70,13 +94,11 @@ function App() {
 
                         <Separator />
 
-                        <form action="" className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="prompt">Prompt</Label>
 
-                                <PromptSelect
-                                    onPromptSelect={handlePromptSelect}
-                                />
+                                <PromptSelect onPromptSelect={setInput} />
                             </div>
                             <div className="space-y-2">
                                 <Label>Model</Label>
@@ -121,7 +143,11 @@ function App() {
 
                             <Separator />
 
-                            <Button type="submit" className="w-full">
+                            <Button
+                                disabled={isLoading}
+                                type="submit"
+                                className="w-full"
+                            >
                                 <Wand2 className="w-4 mr-4" />
                                 Do the Magic
                             </Button>

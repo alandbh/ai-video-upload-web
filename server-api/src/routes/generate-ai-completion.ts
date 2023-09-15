@@ -9,11 +9,11 @@ export async function generateAiCompletionRoute(app:FastifyInstance) {
     app.post('/ai/complete', async (req, res) => {
         const bodySchema = z.object({
             videoId: z.string().uuid(),
-            template: z.string(),
+            prompt: z.string(),
             temperature: z.number().min(0).max(1).default(.5)
         })
 
-        const {videoId, template, temperature} = bodySchema.parse(req.body)
+        const {videoId, prompt, temperature} = bodySchema.parse(req.body)
 
         const video  = await prisma.video.findUniqueOrThrow({
             where: {
@@ -25,7 +25,7 @@ export async function generateAiCompletionRoute(app:FastifyInstance) {
             return res.status(400).send({error: "Video transcript not found"})
         }
 
-        const promptMessage = template.replace('{transcription}', video.transcription)
+        const promptMessage = prompt.replace('{transcription}', video.transcription)
 
         /**
          * Sobre a escolha do modelo

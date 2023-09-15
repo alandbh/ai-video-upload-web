@@ -10,6 +10,9 @@
     "keywords": [],
     "author": " <alanvasconcelos@rga.com>",
     "license": "ISC",
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
+    },
     "devDependencies": {
         "@types/node": "^20.6.0",
         "dotenv": "^16.3.1",
