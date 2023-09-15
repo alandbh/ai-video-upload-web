@@ -12,8 +12,13 @@ import {
 } from "./components/ui/select";
 import { Slider } from "./components/ui/slider";
 import { VideoInputForm } from "./components/video-input-form";
+import { PromptSelect } from "./components/prompt-select";
+import { log } from "./lib/utils";
 
 function App() {
+    function handlePromptSelect(template: string) {
+        log({ template });
+    }
     return (
         <>
             <div className="min-h-screen flex flex-col">
@@ -65,19 +70,9 @@ function App() {
                             <div className="space-y-2">
                                 <Label htmlFor="prompt">Prompt</Label>
 
-                                <Select>
-                                    <SelectTrigger id="prompt">
-                                        <SelectValue placeholder="Select a custom prompt" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="title">
-                                            Video Title
-                                        </SelectItem>
-                                        <SelectItem value="description">
-                                            Video Description
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <PromptSelect
+                                    onPromptSelect={handlePromptSelect}
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label>Model</Label>
